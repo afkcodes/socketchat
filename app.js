@@ -8,7 +8,9 @@ let server = http.createServer(app);
 let io = socketio(server);
 publicPath = path.join(__dirname, "./public");
 
-let users = []
+let users = [];
+let user1;
+let room = null;
 
 app.use(express.static(publicPath));
 
@@ -17,27 +19,46 @@ server.listen(3002, () => {
 });
 
 io.on("connection", (socket) => {
-  console.log('user Conneceted ' + socket.id);
+  console.log("user Conneceted " + socket.id);
+  const currUser = {
+    uid: socket.id,
+    status: "idle",
+    room: socket.id,
+  };
+  users.push(currUser);
 
-  socket.on('chatMessage', (msg)=>{
-    // io.emit('newMessage', msg);
-    socket.to('testRoom').emit('nice game', msg);
-  })
+  socket.on("chatMessage", (msg) => {
+    socket.to(room).emit("nice game", msg);
+  });
 
-  socket.on('search', (data)=>{
-    console.log(data);
-    users.push(data.uid);
-    let user1 = shuffle(users).pop()
-    let user2 = shuffle(users).pop()
-    // socket.join(`${user1}+${user2}`)
-  })
+  socket.on("join", (payload) => {
+    let user2 = hooker(payload.uid);
+    if (room) {
+      socket.join(room);
+      user1.status = "busy";
+      user2.status = "busy";
+    }
+   
+    console.log(users);
+  });
 
-  socket.on('join', (sock)=>{
-    socket.join(sock)
-    console.log(io.sockets.adapter.rooms.get(sock).size)
-  })
-  
+  socket.on("search", (data) => {
+    user1 = users.find((obj) => obj.uid === data.uid);
+    //users.
+    user1.status = "searching";
+  });
+
   socket.on("disconnect", () => {
     console.log(`User Disconnected ${socket.id}`);
   });
 });
+
+function hooker(uid) {
+  for (let i = 0; i < users.length; i++) {
+    const user = users[i];
+    if (user.uid != uid && user.status === "searching") {
+      room = user.uid;
+      return user;
+    }
+  }
+}

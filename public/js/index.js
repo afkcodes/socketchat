@@ -9,7 +9,7 @@ const newItem = (content) => {
 const socket = io();
 
 socket.on("connect", () => {
-  console.log(socket.id);
+  console.log(socket);
 });
 
 // socket.emit("createMessage", { from: "Ashish", text: "Hello awesome" });
@@ -23,12 +23,13 @@ socket.on('nice game',(msg)=>{
 
 const searchbtn = document.querySelector("#search");
 searchbtn.addEventListener("click", () => {
-  socket.emit('search', { from: 'Ashish', uid: socket.id });
+  socket.emit('search', { name: 'Ashish', uid: socket.id, text:'Hello' });
+  socket.emit('join', { name: 'Ashish', uid: socket.id, text:'Hello' });
 });
 
 const joinbtn = document.querySelector("#join");
 joinbtn.addEventListener("click", () => {
-  socket.emit('join', 'testRoom');
+  socket.emit('chatMessage', { from: 'Ashish', uid: socket.id, text:'Hello' });
 });
 
-// socket.emit('search', { from: 'Ashish', uid: socket.id });
+// socket.emit('search', );
