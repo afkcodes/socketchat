@@ -112,3 +112,13 @@ io.on("connection", (socket) => {
     console.log(socket.rooms);
   });
 });
+
+
+
+// Structure for user message
+Message = {
+  message: "Message text",
+  time-date: "date time of creation utf",
+  mid: "randomly generated message id",
+  
+}
